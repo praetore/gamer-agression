@@ -1,5 +1,6 @@
 from bson import ObjectId
 from pymongo import MongoClient
+from bson.json_util import dumps
 
 __author__ = 'Darryl'
 
@@ -10,26 +11,43 @@ port = 27017
 def connect():
     client = MongoClient('mongodb://' + server + ":" + str(port))
     db = client.project3
-    collection = db.tweets
+    collection = db.members_data
     return collection
 
 
-def add_tweet(post):
+def add_subject_members(members):
     collection = connect()
-    post_id = collection.insert(post)
-    return post_id
+    current = find_all()
+
+    #avoiding duplication
+    for i in current:
+        del i['_id']
+    for i in members:
+        if i in current:
+            members.remove(i)
+            current.remove(i)
+
+    collection.insert(members)
+
+
+def find_all_by_subject(subject):
+    collection = connect()
+    members = []
+    for post in collection.find({"subject": subject}):
+        members.append(post)
+    return members
 
 
 def find_all():
     collection = connect()
-    posts = []
+    members = []
     for post in collection.find():
-        posts.append(post)
-    return posts
+        members.append(post)
+    return members
 
 
-def find_by_id(post_id):
+def find_by_id(member_id):
     collection = connect()
-    id_query = {"_id": ObjectId(post_id)}
-    post = collection.find_one(id_query)
-    return post
+    id_query = {"_id": ObjectId(member_id)}
+    member = collection.find_one(id_query)
+    return member

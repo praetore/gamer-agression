@@ -1,5 +1,6 @@
 from urllib2 import urlopen
 from bs4 import BeautifulSoup
+from database import add_subject_members, find_all_by_subject
 from twitter_project import search_twitter, get_trending_twitter
 from unidecode import unidecode
 from prettytable import PrettyTable
@@ -7,17 +8,23 @@ from prettytable import PrettyTable
 __author__ = 'Darryl'
 
 
-def get_status_data(query, game_related_data=False):
+def store_subject_data(subjects, game_related_data=False):
+    for i in subjects:
+        store_status_data(i, game_related_data)
+
+
+def store_status_data(query, game_related_data=False):
     status_data = search_twitter(query)
     user_list = []
     for i in status_data:
         user = i['user']
         user_list.append({"user": unidecode(user['name']),
                             "gamer": game_related_data,
+                            "subject": query,
                             "followers_count": int(user['followers_count']),
                             "friends_count": int(user['friends_count']),
                             "retweet_count": int(i['retweet_count'])})
-    return user_list
+    add_subject_members(user_list)
 
 
 def get_stats(population, summary=False):
@@ -41,9 +48,9 @@ def get_stats(population, summary=False):
 
 
 def present_data_for_group(terms, game_related_data=False):
-    column_names = ["", "Avg. amount of followers per user",
-                    "Avg. amount of friends per user",
-                    "Avg. amount of retweets per user"]
+    column_names = ["", "Followers per user",
+                    "Friends per user",
+                    "Retweets per user"]
     if game_related_data:
         subject = "IMDB top games of 2014"
     else:
@@ -54,9 +61,10 @@ def present_data_for_group(terms, game_related_data=False):
     table.align[subject] = "l"
 
     for i in terms:
-        population = get_status_data(i, game_related_data)
+        population = find_all_by_subject(i)
         avg_follow, avg_friends, avg_retw = get_stats(population)
-        table.add_row([i, avg_follow, avg_friends, avg_retw])
+        if avg_follow != 0 and avg_friends != 0:
+            table.add_row([i, avg_follow, avg_friends, avg_retw])
 
     print table
 
@@ -83,10 +91,14 @@ def get_trending_games():
 
 
 def main():
-    #trends = get_trends_data()
-    #present_data_for_group(trends)
+    trends = get_trends_data()
     games_list = get_trending_games()
-    present_data_for_group(games_list, True)
+
+    #store_subject_data(games_list, True)
+    #store_subject_data(trends)
+
+    present_data_for_group(trends)
+    present_data_for_group(games_list)
 
 
 if __name__ == '__main__':
