@@ -1,6 +1,7 @@
+import pprint
 from urllib2 import urlopen
 from bs4 import BeautifulSoup
-from database import add_subject_members, find_all_by_subject
+from database import add_user, find_all_by_subject
 from twitter_project import search_twitter, get_trending_twitter
 from unidecode import unidecode
 from prettytable import PrettyTable
@@ -16,15 +17,20 @@ def store_subject_data(subjects, game_related_data=False):
 def store_status_data(query, game_related_data=False):
     status_data = search_twitter(query)
     user_list = []
+
     for i in status_data:
         user = i['user']
-        user_list.append({"user": unidecode(user['name']),
-                            "gamer": game_related_data,
-                            "subject": query,
-                            "followers_count": int(user['followers_count']),
-                            "friends_count": int(user['friends_count']),
-                            "retweet_count": int(i['retweet_count'])})
-    add_subject_members(user_list)
+        user_item = {"_id": int(user['id']),
+                     "user_name": unidecode(user['name']),
+                     "gamer": game_related_data,
+                     "subject": query,
+                     "followers_count": int(user['followers_count']),
+                     "friends_count": int(user['friends_count']),
+                     "retweet_on_post_count": int(i['retweet_count'])}
+
+        if user_item not in user_list:
+            add_user(user_item)
+            user_list.append(user_item)
 
 
 def get_stats(population, summary=False):
@@ -37,8 +43,8 @@ def get_stats(population, summary=False):
         for i in population:
             total_followers += i['followers_count']
             total_friends += i['friends_count']
-            total_retweets += i['retweet_count']
-    #TODO: Add statistics for whole group
+            total_retweets += i['retweet_on_post_count']
+    # TODO: Add statistics for whole group
 
     average_followers_size = total_followers / pop_size
     average_friends_size = total_friends / pop_size
@@ -70,7 +76,8 @@ def present_data_for_group(terms, game_related_data=False):
 
 
 def get_trends_data():
-    trends_data = get_trending_twitter()[0]['trends']
+    us_woe_id = 23424977
+    trends_data = get_trending_twitter(us_woe_id)[0]['trends']
     trends = []
     for i in trends_data:
         trends.append(i['name'])
@@ -94,11 +101,11 @@ def main():
     trends = get_trends_data()
     games_list = get_trending_games()
 
-    #store_subject_data(games_list, True)
-    #store_subject_data(trends)
+    store_subject_data(games_list, True)
+    store_subject_data(trends)
 
+    present_data_for_group(games_list, True)
     present_data_for_group(trends)
-    present_data_for_group(games_list)
 
 
 if __name__ == '__main__':

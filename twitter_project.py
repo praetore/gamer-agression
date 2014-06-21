@@ -2,6 +2,7 @@ import os
 
 # Python Twitter Tools, functies voor Twitter, download op
 # http://mike.verdone.ca/twitter/
+import pprint
 import twitter
 
 # Importeer libraries van Twitter-module
@@ -87,8 +88,3 @@ def search_twitter(q, max_results=200, **kw):
 
 def get_trending_twitter(woe_id=1):
     return auth_twitter().trends.place(_id=woe_id)
-
-
-def store_in_database():
-    #TODO: write persistence code for storing tweets in database using database.py
-    return 0

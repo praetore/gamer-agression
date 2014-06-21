@@ -1,6 +1,5 @@
-from bson import ObjectId
 from pymongo import MongoClient
-from bson.json_util import dumps
+from pymongo.errors import DuplicateKeyError
 
 __author__ = 'Darryl'
 
@@ -15,19 +14,12 @@ def connect():
     return collection
 
 
-def add_subject_members(members):
+def add_user(member):
     collection = connect()
-    current = find_all()
-
-    #avoiding duplication
-    for i in current:
-        del i['_id']
-    for i in members:
-        if i in current:
-            members.remove(i)
-            current.remove(i)
-
-    collection.insert(members)
+    try:
+        collection.insert(member)
+    except DuplicateKeyError:
+        pass
 
 
 def find_all_by_subject(subject):
@@ -48,6 +40,6 @@ def find_all():
 
 def find_by_id(member_id):
     collection = connect()
-    id_query = {"_id": ObjectId(member_id)}
+    id_query = {"_id": member_id}
     member = collection.find_one(id_query)
     return member
