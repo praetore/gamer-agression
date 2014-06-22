@@ -1,7 +1,9 @@
-import pprint
+import json
 from urllib2 import urlopen
 from bs4 import BeautifulSoup
-from database import add_user, find_all_by_subject
+from bson import json_util
+from member_database import add_user, find_all_by_subject
+from subject_database import add_subject, find_ten
 from twitter_project import search_twitter, get_trending_twitter
 from unidecode import unidecode
 from prettytable import PrettyTable
@@ -31,6 +33,10 @@ def store_status_data(query, game_related_data=False):
         if user_item not in user_list:
             add_user(user_item)
             user_list.append(user_item)
+
+
+def fetch_status_data(subject):
+    return find_all_by_subject(subject)
 
 
 def get_stats(population, summary=False):
@@ -67,7 +73,7 @@ def present_data_for_group(terms, game_related_data=False):
     table.align[subject] = "l"
 
     for i in terms:
-        population = find_all_by_subject(i)
+        population = fetch_status_data(i)
         avg_follow, avg_friends, avg_retw = get_stats(population)
         if avg_follow != 0 and avg_friends != 0:
             table.add_row([i, avg_follow, avg_friends, avg_retw])
@@ -97,15 +103,34 @@ def get_trending_games():
     return games_list
 
 
+def pp(o, indent=1):
+    print json.dumps(o, indent=indent, default=json_util.default)
+
+
+def store_subjects(subject_list, game_related_data=False):
+    for i in subject_list:
+        add_subject({"subject": i, "game_data": game_related_data})
+
+
+def fetch_subjects(game_related_data=False):
+    return find_ten(game_related_data)
+
+
 def main():
     trends = get_trends_data()
     games_list = get_trending_games()
 
+    store_subjects(trends)
+    store_subjects(games_list, True)
+
+    #trends = fetch_subjects()
+    #games_list = fetch_subjects(True)
+
     store_subject_data(games_list, True)
     store_subject_data(trends)
 
-    present_data_for_group(games_list, True)
-    present_data_for_group(trends)
+    #present_data_for_group(games_list, True)
+    #present_data_for_group(trends)
 
 
 if __name__ == '__main__':
