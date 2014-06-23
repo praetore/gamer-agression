@@ -5,4 +5,5 @@ Dit is een webapp dat gebruikt is bij onderzoek naar de agressiviteit van gamers
 
  - Flask: http://flask.pocoo.org
  - D3.js: http://d3js.org
+ - NVD3: http://nvd3.org
  - python-nvd3 (D3.js python wrapper): https://github.com/areski/python-nvd3
