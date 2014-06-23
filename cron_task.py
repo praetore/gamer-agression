@@ -107,6 +107,7 @@ def generate_chart(groups):
         output_soup = BeautifulSoup(output_html)
         chart_html = str(chart)
         chart_soup = BeautifulSoup(chart_html)
+        output_soup.body = []
         output_soup.body.append(chart_soup.body.find('div'))
         output_soup.body.append(chart_soup.body.find('script'))
         f.write(str(output_soup))
@@ -117,14 +118,14 @@ def fetch_subject_data(game_related_data=False):
 
 
 def main():
-    trends = get_trends_data()
-    games_list = get_trending_games()
-
-    store_subjects(trends)
-    store_subjects(games_list, True)
-
-    store_subject_data(games_list, True)
-    store_subject_data(trends)
+    # trends = get_trends_data()
+    # games_list = get_trending_games()
+    #
+    # store_subjects(trends)
+    # store_subjects(games_list, True)
+    #
+    # store_subject_data(games_list, True)
+    # store_subject_data(trends)
 
     games_list = fetch_subject_data(True)
     trends = fetch_subject_data()
