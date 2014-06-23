@@ -1,0 +1,7 @@
+flask
+twitter
+beautifulsoup4
+python-nvd3
+unidecode
+pymongo
+prettytable
