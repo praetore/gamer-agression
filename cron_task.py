@@ -2,6 +2,7 @@ from urllib2 import urlopen
 from bs4 import BeautifulSoup
 from nvd3 import multiBarChart
 from unidecode import unidecode
+import unirest
 from member_database import add_user, find_all_by_subject
 from subject_database import add_subject, find_ten
 from twitter_project import search_twitter, get_trending_twitter
@@ -47,13 +48,16 @@ def store_status_data(query, game_related_data=False):
 
     for i in status_data:
         user = i['user']
+        post_text = unidecode(i['text'])
         user_item = {"_id": int(user['id']),
                      "user_name": unidecode(user['name']),
                      "gamer": game_related_data,
                      "subject": query,
                      "followers_count": int(user['followers_count']),
                      "friends_count": int(user['friends_count']),
-                     "retweet_on_post_count": int(i['retweet_count'])}
+                     "retweet_on_post_count": int(i['retweet_count']),
+                     "post_text": post_text,
+                     "post_sentiment": get_sentiment(post_text)}
 
         if user_item not in user_list:
             add_user(user_item)
@@ -117,18 +121,26 @@ def fetch_subject_data(game_related_data=False):
     return find_ten(game_related_data)
 
 
-def main():
-    # trends = get_trends_data()
-    # games_list = get_trending_games()
-    #
-    # store_subjects(trends)
-    # store_subjects(games_list, True)
-    #
-    # store_subject_data(games_list, True)
-    # store_subject_data(trends)
+def get_sentiment(status):
+    response = unirest.post("https://japerk-text-processing.p.mashape.com/sentiment/",
+                        headers={"X-Mashape-Key": "0w29CHi5IrmshzMhqjNZft1rByEXp1BBb69jsnfZ2qVKImPqV2"},
+                        params={"language": "english", "text": status})
 
-    games_list = fetch_subject_data(True)
-    trends = fetch_subject_data()
+    return response.body['label']
+
+
+def main():
+    trends = get_trends_data()
+    games_list = get_trending_games()
+
+    store_subjects(trends)
+    store_subjects(games_list, True)
+
+    store_subject_data(games_list, True)
+    store_subject_data(trends)
+
+    # games_list = fetch_subject_data(True)
+    # trends = fetch_subject_data()
 
     generate_chart([games_list, trends])
 
