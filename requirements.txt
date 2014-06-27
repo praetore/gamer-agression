@@ -1,3 +1,4 @@
+prettytable
 flask
 twitter
 beautifulsoup4

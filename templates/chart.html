@@ -8,43 +8,7 @@
 <script src="{{url_for('static', filename='nv.d3.min.js')}}"></script>
 </head>
 <body>
-<div id="multiBarChart"><svg style="width:500px;height:400px;"></svg></div><script>
-
-
-    data_multiBarChart=[{"values": [{"y": 2416, "x": "Followers per user"}, {"y": 804, "x": "Friends per user"}, {"y": 386, "x": "Retweets per post"}], "key": "IMDB top games of 2014", "yAxis": "1"}, {"values": [{"y": 1283, "x": "Followers per user"}, {"y": 902, "x": "Friends per user"}, {"y": 129, "x": "Retweets per post"}], "key": "Twitter trending topics", "yAxis": "1"}];
-
-    nv.addGraph(function() {
-        var chart = nv.models.multiBarChart();
-
-        chart.margin({top: 30, right: 60, bottom: 20, left: 60});
-
-        var datum = data_multiBarChart;
-
-
-
-                chart.yAxis
-                    .tickFormat(d3.format(',.2f'));
-
-
-
-            chart.showLegend(true);
-
-
-
-
-
-
-
-
-        d3.select('#multiBarChart svg')
-            .datum(datum)
-            .transition().duration(500)
-            .attr('width', 500)
-            .attr('height', 400)
-            .call(chart);
-
-    });
-
-
-</script></body>
+{{ data|safe }}
+{{ chart|safe }}
+</body>
 </html>

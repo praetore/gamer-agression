@@ -1,6 +1,9 @@
-from cron_task import fetch_subject_data, get_stats
-from member_database import find_all_by_subject
 from prettytable import PrettyTable
+
+from topic_database import get_latest_topics
+from user_database import get_all_users_by_topic
+from visualize import get_friendship_stats
+
 
 __author__ = 'Darryl'
 
@@ -20,21 +23,21 @@ def present_data_for_group(terms, game_related_data=False):
 
     total_population = []
     for i in terms:
-        population = find_all_by_subject(i)
+        population = get_all_users_by_topic(i)
         for p in population:
             total_population.append(p)
-        avg_follow, avg_friends, avg_retw = get_stats(population)
+        avg_follow, avg_friends, avg_retw = get_friendship_stats(population)
         if avg_follow != 0 and avg_friends != 0:
             table.add_row([i, avg_follow, avg_friends, avg_retw])
 
-    total_followers, total_friends, total_retweets = get_stats(total_population)
+    total_followers, total_friends, total_retweets = get_friendship_stats(total_population)
     table.add_row(["Average of group", total_followers, total_friends, total_retweets])
     print table
 
 
 def main():
-    trends = fetch_subject_data()
-    games_list = fetch_subject_data(True)
+    trends = get_latest_topics()
+    games_list = get_latest_topics(True)
 
     present_data_for_group(games_list, True)
     present_data_for_group(trends)

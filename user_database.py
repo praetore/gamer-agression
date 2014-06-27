@@ -10,36 +10,36 @@ port = 27017
 def connect():
     client = MongoClient('mongodb://' + server + ":" + str(port))
     db = client.project3
-    collection = db.members_data
+    collection = db.users
     return collection
 
 
-def add_user(member):
+def add_user(user):
     collection = connect()
     try:
-        collection.insert(member)
+        collection.insert(user)
     except DuplicateKeyError:
         pass
 
 
-def find_all_by_subject(subject):
+def get_all_users_by_topic(subject):
     collection = connect()
-    members = []
+    users = []
     for post in collection.find({"subject": subject}):
-        members.append(post)
-    return members
+        users.append(post)
+    return users
 
 
-def find_all():
+def get_all_users():
     collection = connect()
-    members = []
+    users = []
     for post in collection.find():
-        members.append(post)
-    return members
+        users.append(post)
+    return users
 
 
-def find_by_id(member_id):
+def get_user_by_id(member_id):
     collection = connect()
     id_query = {"_id": member_id}
-    member = collection.find_one(id_query)
-    return member
+    user = collection.find_one(id_query)
+    return user
