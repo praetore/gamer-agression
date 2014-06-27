@@ -23,13 +23,13 @@ def add_topic(topic):
         pass
 
 
-# TODO: Return ten latest stored topics
 def get_latest_topics(game_related_data=False):
     collection = connect()
     topics = []
-    for post in collection.find({"game_data": game_related_data}):
-        topics.append(unidecode(post['subject']))
-    return topics[:10]
+    for post in collection.find({"game_data": game_related_data}).sort("date_added", 1):
+        if len(topics) != 10:
+            topics.append(unidecode(post['subject']))
+    return topics
 
 
 def get_topic_by_id(topic_id):

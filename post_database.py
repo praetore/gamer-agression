@@ -30,12 +30,12 @@ def get_all_posts(game_related_data=False):
     return posts
 
 
-def get_all_posts_by_subject(subject):
+def get_all_posts_by_topic(subject):
     collection = connect()
-    post = []
+    posts = []
     for post in collection.find({"subject": subject}):
-        post.append(post)
-    return post
+        posts.append(post)
+    return posts
 
 
 def get_post_by_id(subject_id):

@@ -1,10 +1,11 @@
 from urllib2 import urlopen
 
+import arrow
 from bs4 import BeautifulSoup
 from unidecode import unidecode
-import unirest
 
 from post_database import add_post
+from sentiment import get_sentiment, get_classifier
 from user_database import add_user
 from topic_database import add_topic, get_topic_by_name
 from twitter_project import search_twitter, get_trending_twitter
@@ -35,13 +36,13 @@ def get_trending_games():
     return games_list
 
 
-def retrieve_data_from_twitter(subjects, game_related_data=False):
+def retrieve_data_from_twitter(classifier, subjects, game_related_data=False):
     store_topic_data(subjects, game_related_data)
     for subject in subjects:
         print "Retrieving data on", subject
         status_data = search_twitter(subject)
         store_user_data(status_data, subject, game_related_data)
-        # store_post_data(status_data, subject, game_related_data)
+        store_post_data(classifier, status_data, subject, game_related_data)
 
 
 def store_user_data(status_data, subject, game_related_data=False):
@@ -64,13 +65,13 @@ def store_user_data(status_data, subject, game_related_data=False):
                 user_list.append(user_item)
 
 
-def store_post_data(status_data, subject, game_related_data=False):
+def store_post_data(classifier, status_data, subject, game_related_data=False):
     post_list = []
     for i in status_data:
         if unidecode(i['lang']):
             post_text = unidecode(i['text'])
             if post_text not in post_list:
-                post_sentiment = get_sentiment_for_post(post_text)
+                post_sentiment = get_sentiment(classifier, post_text)
 
                 post_item = {"_id": int(i['id']),
                              "gamer": game_related_data,
@@ -85,17 +86,10 @@ def store_post_data(status_data, subject, game_related_data=False):
 def store_topic_data(subjects, game_related_data=False):
     for subject in subjects:
         if not get_topic_by_name(subject):
+            utc = arrow.utcnow()
             add_topic({"subject": subject,
+                       "date_added": utc.to('Europe/Amsterdam').timestamp,
                        "game_data": game_related_data})
-
-
-# Implement textblob since this is way too slow
-def get_sentiment_for_post(status):
-    response = unirest.post("https://japerk-text-processing.p.mashape.com/sentiment/",
-                            headers={"X-Mashape-Key": "0w29CHi5IrmshzMhqjNZft1rByEXp1BBb69jsnfZ2qVKImPqV2"},
-                            params={"language": "english", "text": status})
-
-    return response.body['label']
 
 
 def main():
@@ -103,11 +97,13 @@ def main():
     games_list = get_trending_games()
     trends = get_trends_data()
 
+    classifier = get_classifier()
+
     print "Twitter trending topics"
-    retrieve_data_from_twitter(trends)
+    retrieve_data_from_twitter(classifier, trends)
 
     print "Popular videogames"
-    retrieve_data_from_twitter(games_list, True)
+    retrieve_data_from_twitter(classifier, games_list, True)
 
 
 if __name__ == '__main__':

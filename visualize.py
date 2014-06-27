@@ -1,5 +1,6 @@
-from bs4 import BeautifulSoup
 from nvd3 import multiBarChart
+
+from post_database import get_all_posts_by_topic
 
 from user_database import get_all_users_by_topic
 
@@ -25,16 +26,33 @@ def get_friendship_stats(population):
     return average_followers_size, average_friends_size, average_retweets_size
 
 
+def get_sentiment_stats(population):
+    pop_size = len(population)
+    if pop_size == 0:
+        return 0, 0
+
+    negative, positive = 0, 0
+    for i in population:
+        sentiment = i['post_sentiment']
+        if sentiment == 'neg':
+            negative += 1
+        else:
+            positive += 1
+
+    return positive, negative
+
+
 def generate_friends_chart(groups):
     chart = multiBarChart(width=500, height=400, x_axis_format=None)
     xdata = ["Followers per user", "Friends per user", "Retweets per post"]
     ydata = [[], []]
 
-    for subject in groups:
-        index = groups.index(subject)
+    for topics in groups:
+        index = groups.index(topics)
         total_population = []
-        for i in subject:
-            population = get_all_users_by_topic(i)
+        for topic in topics:
+            population = get_all_users_by_topic(topic)
+            print len(population)
             for p in population:
                 total_population.append(p)
 
@@ -47,8 +65,31 @@ def generate_friends_chart(groups):
     chart.add_serie(name="IMDB top games of 2014", y=ydata[0], x=xdata)
     chart.add_serie(name="Twitter trending topics", y=ydata[1], x=xdata)
 
-    chart_html = str(chart)
-    chart_soup = BeautifulSoup(chart_html)
-    html_data = chart_soup.body.find('div')
-    html_chart = chart_soup.body.find('script')
-    return html_data, html_chart
+    str(chart)
+    return chart.content
+
+
+# TODO: Refactor to use piechart instead
+def generate_sentiment_chart(groups):
+    chart = multiBarChart(width=500, height=400, x_axis_format=None)
+    xdata = ["Positive sentiment", "Negative sentiment"]
+    ydata = [[], []]
+
+    for topics in groups:
+        index = groups.index(topics)
+        total_population = []
+        for topic in topics:
+            population = get_all_posts_by_topic(topic)
+            for p in population:
+                total_population.append(p)
+
+        y = ydata[index]
+        pos, neg = get_sentiment_stats(total_population)
+        y.append(pos)
+        y.append(neg)
+
+    chart.add_serie(name="IMDB top games of 2014", y=ydata[0], x=xdata)
+    chart.add_serie(name="Twitter trending topics", y=ydata[1], x=xdata)
+
+    str(chart)
+    return chart.content
