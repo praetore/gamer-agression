@@ -1,6 +1,6 @@
 # Intellij IDEA
 .idea/
-.pyc
+*.pyc
 
 # Project folders
 out/
