@@ -1,5 +1,14 @@
+# Intellij IDEA
 .idea/
+
+# Project folders
 out/
-test_data.py
+classifier_test/
+
+# Project files
 config.py
 classifier.pickle
+test_data.py
+test_database.py
+test_sentiment.py
+test_twitter.py
