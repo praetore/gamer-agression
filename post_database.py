@@ -1,15 +1,20 @@
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 
+import config
+
+
 __author__ = 'Darryl'
 
-server = 'localhost'
-port = 27017
+server = config.server
+port = config.port
+database = config.database
 
 
 def connect():
-    client = MongoClient('mongodb://' + server + ":" + str(port))
-    db = client.project3
+    uri = 'mongodb://' + server + ":" + str(port)
+    client = MongoClient(uri)
+    db = client[database]
     collection = db.posts
     return collection
 

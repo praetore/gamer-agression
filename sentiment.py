@@ -1,4 +1,5 @@
 import random
+import pickle
 
 import nltk.tokenize as tokenize
 import nltk
@@ -37,11 +38,16 @@ def get_word_features():
 
 
 def get_classifier():
-    word_features = get_word_features()
+    try:
+        with open('classifier.pickle', 'rb') as saved_cl:
+            classifier = pickle.load(saved_cl)
+    except (pickle.PickleError, IOError):
+        word_features = get_word_features()
+        train_set = [(document_features(d, word_features), c) for (d, c) in get_docs()]
+        classifier = nltk.NaiveBayesClassifier.train(train_set)
+        with open('classifier.pickle', 'wb') as saved_cl:
+            pickle.dump(classifier, saved_cl)
 
-    train_set = [(document_features(d, word_features), c) for (d, c) in get_docs()[:200]]
-
-    classifier = nltk.NaiveBayesClassifier.train(train_set)
     return classifier
 
 

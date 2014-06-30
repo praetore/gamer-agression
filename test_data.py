@@ -66,8 +66,8 @@ def main():
     present_friendship_data(trends)
     present_friendship_data(games_list, True)
 
-    # present_sentiment_data(trends)
-    # present_sentiment_data(games_list, True)
+    present_sentiment_data(trends)
+    present_sentiment_data(games_list, True)
 
 
 if __name__ == '__main__':

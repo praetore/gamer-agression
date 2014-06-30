@@ -48,7 +48,7 @@ def retrieve_data_from_twitter(classifier, subjects, game_related_data=False):
 def store_user_data(status_data, subject, game_related_data=False):
     user_list = []
     for i in status_data:
-        if unidecode(i['lang']) == 'en' and i['retweeted']:
+        if unidecode(i['lang']) == 'en':
             user = i['user']
             user_name = unidecode(user['name'])
 
@@ -59,7 +59,6 @@ def store_user_data(status_data, subject, game_related_data=False):
                          "followers_count": int(user['followers_count']),
                          "friends_count": int(user['friends_count']),
                          "retweet_on_post_count": int(i['retweet_count'])}
-
             if user_item not in user_list:
                 add_user(user_item)
                 user_list.append(user_item)
@@ -97,6 +96,7 @@ def main():
     games_list = get_trending_games()
     trends = get_trends_data()
 
+    print "Training classifier"
     classifier = get_classifier()
 
     print "Twitter trending topics"

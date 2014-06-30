@@ -2,15 +2,20 @@ from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 from unidecode import unidecode
 
+import config
+
+
 __author__ = 'Darryl'
 
-server = 'localhost'
-port = 27017
+server = config.server
+port = config.port
+database = config.database
 
 
 def connect():
-    client = MongoClient('mongodb://' + server + ":" + str(port))
-    db = client.project3
+    uri = 'mongodb://' + server + ":" + str(port)
+    client = MongoClient(uri)
+    db = client[database]
     collection = db.topics
     return collection
 
@@ -41,6 +46,6 @@ def get_topic_by_id(topic_id):
 
 def get_topic_by_name(topic_name):
     collection = connect()
-    name_query = {"_id": topic_name}
+    name_query = {"subject": topic_name}
     topic = collection.find_one(name_query)
     return topic

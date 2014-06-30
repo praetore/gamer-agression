@@ -1,7 +1,6 @@
-from nvd3 import multiBarChart
+from nvd3 import multiBarChart, pieChart
 
 from post_database import get_all_posts_by_topic
-
 from user_database import get_all_users_by_topic
 
 
@@ -31,7 +30,7 @@ def get_sentiment_stats(population):
     if pop_size == 0:
         return 0, 0
 
-    negative, positive = 0, 0
+    negative, positive = 0.0, 0.0
     for i in population:
         sentiment = i['post_sentiment']
         if sentiment == 'neg':
@@ -39,7 +38,10 @@ def get_sentiment_stats(population):
         else:
             positive += 1
 
-    return positive, negative
+    percent_neg = negative / len(population) * 100
+    percent_pos = positive / len(population) * 100
+
+    return percent_pos, percent_neg
 
 
 def generate_friends_chart(groups):
@@ -52,7 +54,6 @@ def generate_friends_chart(groups):
         total_population = []
         for topic in topics:
             population = get_all_users_by_topic(topic)
-            print len(population)
             for p in population:
                 total_population.append(p)
 
@@ -69,27 +70,23 @@ def generate_friends_chart(groups):
     return chart.content
 
 
-# TODO: Refactor to use piechart instead
-def generate_sentiment_chart(groups):
-    chart = multiBarChart(width=500, height=400, x_axis_format=None)
+def generate_sentiment_chart(topics, name):
+    chart = pieChart(name=name, color_list=["green", "red"], height=400, width=400)
     xdata = ["Positive sentiment", "Negative sentiment"]
-    ydata = [[], []]
+    ydata = []
 
-    for topics in groups:
-        index = groups.index(topics)
-        total_population = []
-        for topic in topics:
-            population = get_all_posts_by_topic(topic)
-            for p in population:
-                total_population.append(p)
+    total_population = []
+    for topic in topics:
+        population = get_all_posts_by_topic(topic)
+        for p in population:
+            total_population.append(p)
 
-        y = ydata[index]
-        pos, neg = get_sentiment_stats(total_population)
-        y.append(pos)
-        y.append(neg)
+    pos, neg = get_sentiment_stats(total_population)
+    ydata.append(pos)
+    ydata.append(neg)
 
-    chart.add_serie(name="IMDB top games of 2014", y=ydata[0], x=xdata)
-    chart.add_serie(name="Twitter trending topics", y=ydata[1], x=xdata)
+    extra_serie = {"tooltip": {"y_start": "", "y_end": "%"}}
+    chart.add_serie(name="IMDB top games of 2014", y=ydata, x=xdata, extra=extra_serie)
 
     str(chart)
     return chart.content

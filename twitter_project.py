@@ -2,7 +2,6 @@ import os
 
 # Python Twitter Tools, functies voor Twitter, download op
 # http://mike.verdone.ca/twitter/
-import pprint
 import twitter
 
 # Importeer libraries van Twitter-module
@@ -12,11 +11,11 @@ from twitter.oauth_dance import oauth_dance
 # Maak OAuth-gegevens aan
 # Check https://dev.twitter.com/apps, and in an application,
 # go to OAuth tool
-import twitter_config
+import config
 
-app_name = twitter_config.app_name
-cons_key = twitter_config.cons_key
-cons_secret = twitter_config.cons_secret
+app_name = config.app_name
+cons_key = config.cons_key
+cons_secret = config.cons_secret
 
 TOKEN_FILE = "out/twitter.oauth"  # Don't change this!
 
