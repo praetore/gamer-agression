@@ -1,5 +1,4 @@
 from pymongo import MongoClient
-from pymongo.errors import DuplicateKeyError
 from unidecode import unidecode
 
 import config
@@ -22,9 +21,9 @@ def connect():
 
 def add_topic(topic):
     collection = connect()
-    try:
+    if not get_topic_by_name(topic['subject']):
         collection.insert(topic)
-    except DuplicateKeyError:
+    else:
         pass
 
 
