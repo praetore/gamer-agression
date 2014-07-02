@@ -6,7 +6,7 @@ from unidecode import unidecode
 
 from post_database import add_post
 from sentiment import get_sentiment, get_classifier
-from user_database import add_user
+from user_database import add_user, get_all_users_by_topic
 from topic_database import add_topic, get_topic_by_name
 from twitter_project import search_twitter, get_trending_twitter
 
@@ -43,6 +43,7 @@ def retrieve_data_from_twitter(classifier, subjects, game_related_data=False):
         status_data = search_twitter(subject)
         store_user_data(status_data, subject, game_related_data)
         store_post_data(classifier, status_data, subject, game_related_data)
+        assert len(get_all_users_by_topic(subject)) != 0
 
 
 def store_user_data(status_data, subject, game_related_data=False):

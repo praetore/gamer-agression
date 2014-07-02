@@ -3,23 +3,24 @@
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/nvd3/1.1.15-beta/nv.d3.min.css"/>
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.1/normalize.min.css"/>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/nvd3/1.1.15-beta/nv.d3.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.4.9/d3.min.js"></script>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/nvd3/1.1.15-beta/nv.d3.min.css"/>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/nvd3/1.1.15-beta/nv.d3.min.js"></script>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/3.0.1/normalize.min.css"/>
+
     <style>
         body {
             font-family: Verdana, Arial, sans-serif;
             font-size: .7em;
         }
 
-        #games-chart {
+        #distribution-gamers, #sentiment-gamers {
             float: left;
         }
 
-        #friends-chart, #sentiment-chart {
-            margin: 0 auto;
-            width: 800px;
+        #distribution-chart, #friends-chart, #sentiment-chart {
+            margin: 6em auto;
+            width: 1200px;
         }
     </style>
 </head>
@@ -28,12 +29,24 @@
     <h1>Average social interaction data per user</h1>
     {{ friends_chart|safe }}
 </div>
+<div id="distribution-chart">
+    <h1>Distribution of followers</h1>
+
+    <div id="distribution-gamers">
+        <h3>Distribution of followers across gamers</h3>
+        {{ distribution_chart_gamers|safe }}
+    </div>
+    <div id="distribution-ngamers">
+        <h3>Distribution of followers across non-gamers</h3>
+        {{ distribution_chart_ngamers|safe }}
+    </div>
+</div>
 <div id="sentiment-chart">
     <h1>Twitter sentiment data on post content per subject</h1>
 
-    <div id="games-chart"><h3>IMDB Top games of 2014</h3>
+    <div id="sentiment-gamers"><h3>IMDB Top games of 2014</h3>
         {{ sentiment_chart_games|safe }}</div>
-    <div id="trends-chart"><h3>Twitter trending topics</h3>
+    <div id="sentiment-ngamers"><h3>Twitter trending topics</h3>
         {{ sentiment_chart_trends|safe }}</div>
 </div>
 </body>
