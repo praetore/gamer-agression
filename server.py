@@ -14,20 +14,37 @@ def index():
     games_list = get_latest_topics(True)
     trends = get_latest_topics()
     topics_list = [games_list, trends]
-    friends_chart = generate_friends_chart(topics_list)
-    sentiment_chart_games = generate_sentiment_chart(games_list, 'gamesChart')
-    sentiment_chart_trends = generate_sentiment_chart(trends, 'trendsChart')
-    distribution_chart_gamers = generate_distribution_chart(games_list,
-                                                            "gamerFollowersDistribution",
-                                                            "followers_count")
-    distribution_chart_ngamers = generate_distribution_chart(trends,
-                                                             "nGamerFollowersDistribution",
-                                                             "followers_count")
-    return render_template('chart.html', friends_chart=friends_chart,
-                           sentiment_chart_games=sentiment_chart_games,
-                           sentiment_chart_trends=sentiment_chart_trends,
-                           distribution_chart_gamers=distribution_chart_gamers,
-                           distribution_chart_ngamers=distribution_chart_ngamers)
+    social_interaction = generate_friends_chart(topics_list)
+
+    sentiment = [generate_sentiment_chart(games_list, 'gamesChart'),
+                 generate_sentiment_chart(trends, 'trendsChart')]
+
+    distribution_followers = [generate_distribution_chart(games_list,
+                                                          "gamerFollowersDist",
+                                                          "followers_count"),
+                              generate_distribution_chart(trends,
+                                                          "nGamerFollowersDist",
+                                                          "followers_count")]
+
+    distribution_friends = [generate_distribution_chart(games_list,
+                                                        "gamerFriendsDist",
+                                                        "friends_count"),
+                            generate_distribution_chart(trends,
+                                                        "nGamerFriendsDist",
+                                                        "friends_count")]
+
+    distribution_retweets = [generate_distribution_chart(games_list,
+                                                         "gamerRetweetDist",
+                                                         "friends_count", 5, 10, True),
+                             generate_distribution_chart(trends,
+                                                         "nGamerRetweetDist",
+                                                         "friends_count", 5, 10, True)]
+
+    return render_template('chart.html', social_interaction=social_interaction,
+                           sentiment=sentiment,
+                           distribution_followers=distribution_followers,
+                           distribution_friends=distribution_friends,
+                           distribution_retweets=distribution_retweets)
 
 
 if __name__ == '__main__':

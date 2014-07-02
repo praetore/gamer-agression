@@ -14,8 +14,9 @@
             font-size: .7em;
         }
 
-        #distribution-gamers, #sentiment-gamers {
+        .distribution-chart, .sentiment-chart {
             float: left;
+            margin-bottom: 5em;
         }
 
         #distribution-chart, #friends-chart, #sentiment-chart {
@@ -27,27 +28,49 @@
 <body>
 <div id="friends-chart">
     <h1>Average social interaction data per user</h1>
-    {{ friends_chart|safe }}
+    {{ social_interaction|safe }}
 </div>
 <div id="distribution-chart">
-    <h1>Distribution of followers</h1>
+    <h1>Breakdown of social interaction data</h1>
 
-    <div id="distribution-gamers">
-        <h3>Distribution of followers across gamers</h3>
-        {{ distribution_chart_gamers|safe }}
+    <div id="distribution-followers">
+        <div class="distribution-chart" id="distribution-followers-gamers">
+            <h3>Distribution of followers across gamers</h3>
+            {{ distribution_followers[0]|safe }}
+        </div>
+        <div class="distribution-chart" id="distribution-followers-ngamers">
+            <h3>Distribution of followers across non-gamers</h3>
+            {{ distribution_followers[1]|safe }}
+        </div>
     </div>
-    <div id="distribution-ngamers">
-        <h3>Distribution of followers across non-gamers</h3>
-        {{ distribution_chart_ngamers|safe }}
+    <div id="distribution-friends">
+        <div class="distribution-chart" id="distribution-friends-gamers">
+            <h3>Distribution of friends across gamers</h3>
+            {{ distribution_friends[0]|safe }}
+        </div>
+        <div class="distribution-chart" id="distribution-friends-ngamers">
+            <h3>Distribution of friends across non-gamers</h3>
+            {{ distribution_friends[1]|safe }}
+        </div>
+    </div>
+    <div id="distribution-retweets">
+        <div class="distribution-chart" id="distribution-retweets-gamers">
+            <h3>Distribution of retweets across gamers</h3>
+            {{ distribution_retweets[0]|safe }}
+        </div>
+        <div class="distribution-chart" id="distribution-retweets-ngamers">
+            <h3>Distribution of retweets across non-gamers</h3>
+            {{ distribution_retweets[1]|safe }}
+        </div>
     </div>
 </div>
 <div id="sentiment-chart">
     <h1>Twitter sentiment data on post content per subject</h1>
 
-    <div id="sentiment-gamers"><h3>IMDB Top games of 2014</h3>
-        {{ sentiment_chart_games|safe }}</div>
-    <div id="sentiment-ngamers"><h3>Twitter trending topics</h3>
-        {{ sentiment_chart_trends|safe }}</div>
+    <div class="sentiment-chart" id="sentiment-gamers"><h3>Gamers</h3>
+        {{ sentiment[0]|safe }}</div>
+    <div class="sentiment-chart" id="sentiment-ngamers"><h3>Non-gamers</h3>
+        {{ sentiment[1]|safe }}</div>
 </div>
 </body>
 </html>

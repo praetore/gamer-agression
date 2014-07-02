@@ -63,30 +63,35 @@ def generate_friends_chart(group):
         y.append(friend)
         y.append(retw)
 
-    chart.add_serie(name="IMDB top games of 2014", y=ydata[0], x=xdata)
-    chart.add_serie(name="Twitter trending topics", y=ydata[1], x=xdata)
+    chart.add_serie(name="Gamers", y=ydata[0], x=xdata)
+    chart.add_serie(name="Non-gamers", y=ydata[1], x=xdata)
 
     str(chart)
     return chart.content
 
 
-def get_distribution_stats(population, key, mult, bars):
+def get_distribution_stats(population, key, mult, bars, include_none):
     values = []
     high = 0
+    none = 0
     for i in range(bars):
         count = 0
         for p in population:
             value = p[key]
+            if include_none and value == 0:
+                none += 1
             if value in range((i * 100) * mult, ((i + 1) * 100) * mult):
                 count += 1
             if value > ((bars * 100) * mult):
                 high += 1
         values.append(count)
     values.append(high)
+    if include_none:
+        values.insert(0, none)
     return values
 
 
-def generate_distribution_chart(topics, name, key, mult=10, bars=10):
+def generate_distribution_chart(topics, name, key, mult=10, bars=10, include_none=False):
     chart = discreteBarChart(name=name, height=400, width=60 * bars)
 
     total_population = []
@@ -96,10 +101,10 @@ def generate_distribution_chart(topics, name, key, mult=10, bars=10):
             total_population.append(p)
 
     xdata = [str(((i + 1) * mult) * 100) for i in range(bars)]
-    xdata.append(str((100 * bars) * mult) + ">")
-    print xdata
-    ydata = get_distribution_stats(total_population, key, mult, bars)
-    assert len(ydata) == bars + 1
+    xdata.append(str((100 * bars) * mult) + " >")
+    if include_none:
+        xdata.insert(0, "0")
+    ydata = get_distribution_stats(total_population, key, mult, bars, include_none)
     chart.add_serie(y=ydata, x=xdata)
     str(chart)
     return chart.content
@@ -121,7 +126,7 @@ def generate_sentiment_chart(topics, name):
     ydata.append(neg)
 
     extra_serie = {"tooltip": {"y_start": "", "y_end": "%"}}
-    chart.add_serie(name="IMDB top games of 2014", y=ydata, x=xdata, extra=extra_serie)
+    chart.add_serie(y=ydata, x=xdata, extra=extra_serie)
 
     str(chart)
     return chart.content
