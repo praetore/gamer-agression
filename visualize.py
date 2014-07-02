@@ -1,4 +1,4 @@
-from nvd3 import multiBarChart, pieChart
+from nvd3 import multiBarChart, pieChart, discreteBarChart
 
 from post_database import get_all_posts_by_topic
 from user_database import get_all_users_by_topic
@@ -44,13 +44,13 @@ def get_sentiment_stats(population):
     return percent_pos, percent_neg
 
 
-def generate_friends_chart(groups):
+def generate_friends_chart(group):
     chart = multiBarChart(width=500, height=400, x_axis_format=None)
     xdata = ["Followers per user", "Friends per user", "Retweets per post"]
     ydata = [[], []]
 
-    for topics in groups:
-        index = groups.index(topics)
+    for topics in group:
+        index = group.index(topics)
         total_population = []
         for topic in topics:
             population = get_all_users_by_topic(topic)
@@ -66,6 +66,41 @@ def generate_friends_chart(groups):
     chart.add_serie(name="IMDB top games of 2014", y=ydata[0], x=xdata)
     chart.add_serie(name="Twitter trending topics", y=ydata[1], x=xdata)
 
+    str(chart)
+    return chart.content
+
+
+def get_distribution_stats(population, key, mult, bars):
+    values = []
+    high = 0
+    for i in range(bars):
+        count = 0
+        for p in population:
+            value = p[key]
+            if value in range((i * 100) * mult, ((i + 1) * 100) * mult):
+                count += 1
+            if value > ((bars * 100) * mult):
+                high += 1
+        values.append(count)
+    values.append(high)
+    return values
+
+
+def generate_distribution_chart(topics, name, key, mult=10, bars=10):
+    chart = discreteBarChart(name=name, height=400, width=60 * bars)
+
+    total_population = []
+    for topic in topics:
+        population = get_all_users_by_topic(topic)
+        for p in population:
+            total_population.append(p)
+
+    xdata = [str(((i + 1) * mult) * 100) for i in range(bars)]
+    xdata.append(str((100 * bars) * mult) + ">")
+    print xdata
+    ydata = get_distribution_stats(total_population, key, mult, bars)
+    assert len(ydata) == bars + 1
+    chart.add_serie(y=ydata, x=xdata)
     str(chart)
     return chart.content
 
