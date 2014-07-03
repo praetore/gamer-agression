@@ -11,7 +11,6 @@ def get_friendship_stats(population):
     pop_size = len(population)
     if pop_size == 0:
         return 0, 0, 0
-
     total_followers, total_friends, total_retweets = 0, 0, 0
     for i in population:
         total_followers += i['followers_count']
@@ -21,7 +20,6 @@ def get_friendship_stats(population):
     average_followers_size = total_followers / pop_size
     average_friends_size = total_friends / pop_size
     average_retweets_size = float(total_retweets) / pop_size
-
     return average_followers_size, average_friends_size, average_retweets_size
 
 
@@ -70,28 +68,23 @@ def generate_friends_chart(group):
     return chart.content
 
 
-def get_distribution_stats(population, key, mult, bars, include_none):
+def get_distribution_stats(population, key, mult, bars):
     values = []
     high = 0
-    none = 0
     for i in range(bars):
         count = 0
         for p in population:
             value = p[key]
-            if include_none and value == 0:
-                none += 1
-            if value in range((i * 100) * mult, ((i + 1) * 100) * mult):
+            if value in range(int((i * 100) * mult), int(float((i + 1) * 100 * mult))):
                 count += 1
             if value > ((bars * 100) * mult):
                 high += 1
         values.append(count)
-    values.append(high)
-    if include_none:
-        values.insert(0, none)
+    values.append(high / bars)
     return values
 
 
-def generate_distribution_chart(topics, name, key, mult=10, bars=10, include_none=False):
+def generate_distribution_chart(topics, name, key, mult=10.0, bars=10, include_none=False):
     chart = discreteBarChart(name=name, height=400, width=60 * bars)
 
     total_population = []
@@ -100,11 +93,12 @@ def generate_distribution_chart(topics, name, key, mult=10, bars=10, include_non
         for p in population:
             total_population.append(p)
 
-    xdata = [str(((i + 1) * mult) * 100) for i in range(bars)]
-    xdata.append(str((100 * bars) * mult) + " >")
+    xdata = [str(((i + 1) * mult) * 100)[:-2] for i in range(bars)]
     if include_none:
         xdata.insert(0, "0")
-    ydata = get_distribution_stats(total_population, key, mult, bars, include_none)
+        xdata.insert(-1, str(((100 * bars) * mult) - 1)[:-2] + " >")
+    xdata.append(str((100 * bars) * mult)[:-2] + " >")
+    ydata = get_distribution_stats(total_population, key, mult, bars)
     chart.add_serie(y=ydata, x=xdata)
     str(chart)
     return chart.content

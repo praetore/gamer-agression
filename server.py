@@ -35,10 +35,10 @@ def index():
 
     distribution_retweets = [generate_distribution_chart(games_list,
                                                          "gamerRetweetDist",
-                                                         "friends_count", 5, 10, True),
+                                                         "retweet_on_post_count", 0.01, 10, True),
                              generate_distribution_chart(trends,
                                                          "nGamerRetweetDist",
-                                                         "friends_count", 5, 10, True)]
+                                                         "retweet_on_post_count", 0.01, 10, True)]
 
     return render_template('chart.html', social_interaction=social_interaction,
                            sentiment=sentiment,
