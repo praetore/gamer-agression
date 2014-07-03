@@ -21,17 +21,17 @@ def index():
 
     distribution_followers = [generate_distribution_chart(games_list,
                                                           "gamerFollowersDist",
-                                                          "followers_count"),
+                                                          "followers_count", 10, 10),
                               generate_distribution_chart(trends,
                                                           "nGamerFollowersDist",
-                                                          "followers_count")]
+                                                          "followers_count", 10, 10)]
 
     distribution_friends = [generate_distribution_chart(games_list,
                                                         "gamerFriendsDist",
-                                                        "friends_count"),
+                                                        "friends_count", 10, 10),
                             generate_distribution_chart(trends,
                                                         "nGamerFriendsDist",
-                                                        "friends_count")]
+                                                        "friends_count", 10, 10)]
 
     distribution_retweets = [generate_distribution_chart(games_list,
                                                          "gamerRetweetDist",

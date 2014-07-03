@@ -17,8 +17,8 @@ def get_friendship_stats(population):
         total_friends += i['friends_count']
         total_retweets += i['retweet_on_post_count']
 
-    average_followers_size = total_followers / pop_size
-    average_friends_size = total_friends / pop_size
+    average_followers_size = float(total_followers) / pop_size
+    average_friends_size = float(total_friends) / pop_size
     average_retweets_size = float(total_retweets) / pop_size
     return average_followers_size, average_friends_size, average_retweets_size
 
