@@ -1,14 +1,12 @@
-from urllib2 import urlopen
+import hashlib
+from urllib.request import urlopen
 
 import arrow
 from bs4 import BeautifulSoup
 from unidecode import unidecode
+from twitter import search_twitter, get_trending_twitter
 
-from post_database import add_post
-from sentiment import get_sentiment, get_classifier
-from user_database import add_user, get_all_users_by_topic
-from topic_database import add_topic, get_topic_by_name
-from twitter_project import search_twitter, get_trending_twitter
+from cron.sentiment import get_sentiment, get_classifier
 
 
 __author__ = 'Darryl'
@@ -39,7 +37,7 @@ def get_trending_games():
 def retrieve_data_from_twitter(classifier, subjects, game_related_data=False):
     store_topic_data(subjects, game_related_data)
     for subject in subjects:
-        print "Retrieving data on", subject
+        print("Retrieving data on {}".format(subject))
         status_data = search_twitter(subject)
         store_user_data(status_data, subject, game_related_data)
         store_post_data(classifier, status_data, subject, game_related_data)
@@ -84,26 +82,29 @@ def store_post_data(classifier, status_data, subject, game_related_data=False):
 
 
 def store_topic_data(subjects, game_related_data=False):
+    h = hashlib.sha1()
     for subject in subjects:
         if not get_topic_by_name(subject):
             utc = arrow.utcnow()
-            add_topic({"subject": subject,
-                       "date_added": utc.to('Europe/Amsterdam').timestamp,
-                       "game_data": game_related_data})
+            add_topic({
+                "_id": h.update(subject).hexdigest(),
+                "subject": subject,
+                "date_added": utc.to('Europe/Amsterdam').timestamp,
+                "game_data": game_related_data})
 
 
 def main():
-    print "Retrieving list of topics"
+    print("Retrieving list of topics")
     games_list = get_trending_games()
     trends = get_trends_data()
 
-    print "Training classifier"
+    print("Training classifier")
     classifier = get_classifier()
 
-    print "Twitter trending topics"
+    print("Twitter trending topics")
     retrieve_data_from_twitter(classifier, trends)
 
-    print "Popular videogames"
+    print("Popular videogames")
     retrieve_data_from_twitter(classifier, games_list, True)
 
 

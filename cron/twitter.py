@@ -2,16 +2,15 @@ import os
 
 # Python Twitter Tools, functies voor Twitter, download op
 # http://mike.verdone.ca/twitter/
-import twitter
 
 # Importeer libraries van Twitter-module
-from twitter.oauth import write_token_file, read_token_file
-from twitter.oauth_dance import oauth_dance
+from cron.twitter.oauth import write_token_file, read_token_file
+from cron.twitter.oauth_dance import oauth_dance
 
 # Maak OAuth-gegevens aan
 # Check https://dev.twitter.com/apps, and in an application,
 # go to OAuth tool
-import config
+from app import config
 
 app_name = config.app_name
 cons_key = config.cons_key
@@ -68,7 +67,7 @@ def search_twitter(q, max_results=200, **kw):
     for _ in range(10):  # 10*100 = 1000
         try:
             next_results = search_results['search_metadata']['next_results']
-        except KeyError, e:  # No more results when next_results doesn't exist
+        except KeyError:  # No more results when next_results doesn't exist
             break
 
         # Create a dictionary from next_results, which has the following form:

@@ -6,14 +6,13 @@ import nltk
 
 
 def bag_of_words(words):
-    return dict([word, True] for word in words)
+    return dict((word, True) for word in words)
 
 
 def document_features(document, word_features):
     features = {}
     for word in word_features:
         features[word] = (word in document)
-        # features['contains(%s)' % word] = (word in document_words)
     return features
 
 

@@ -1,12 +1,4 @@
-from flask import Flask, render_template
-
-from topic_database import get_latest_topics
-from visualize import generate_friends_chart, generate_sentiment_chart, generate_distribution_chart
-
-
-__author__ = 'Darryl'
-
-app = Flask(__name__)
+from app import app
 
 
 @app.route('/')
@@ -45,7 +37,3 @@ def index():
                            distribution_followers=distribution_followers,
                            distribution_friends=distribution_friends,
                            distribution_retweets=distribution_retweets)
-
-
-if __name__ == '__main__':
-    app.run(debug=True)

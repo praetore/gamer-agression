@@ -1,7 +1,6 @@
 from nvd3 import multiBarChart, pieChart, discreteBarChart
 
 from post_database import get_all_posts_by_topic
-from user_database import get_all_users_by_topic
 
 
 __author__ = 'Darryl'
