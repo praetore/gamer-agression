@@ -4,7 +4,6 @@ import pickle
 
 import nltk.tokenize as tokenize
 import nltk
-from app import app
 
 
 def bag_of_words(words):
@@ -39,7 +38,7 @@ def get_word_features():
 
 
 def get_classifier():
-    binfile = os.path.join(app.config["APP_STORAGE"], 'classifier.pickle')
+    binfile = os.path.join(os.environ.get("OPENSHIFT_DATA_DIR"), 'classifier.pickle')
     try:
         with open(binfile, 'rb') as saved_cl:
             classifier = pickle.load(saved_cl)

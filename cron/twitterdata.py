@@ -11,13 +11,12 @@ from twitter.oauth_dance import oauth_dance
 # Maak OAuth-gegevens aan
 # Check https://dev.twitter.com/apps, and in an application,
 # go to OAuth tool
-from app import default
 
-app_name = default["TWITTER_APPNAME"]
-cons_key = default["TWITTER_KEY"]
-cons_secret = default["TWITTER_SECRET"]
+app_name = os.environ.get("TWITTER_APPNAME")
+cons_key = os.environ.get("TWITTER_KEY")
+cons_secret = os.environ.get("TWITTER_SECRET")
 
-TOKEN_FILE = os.path.join(default["APP_STORAGE"], "out", "twitter.oauth")  # Don't change this!
+TOKEN_FILE = os.path.join(os.environ.get("OPENSHIFT_DATA_DIR"), "out", "twitter.oauth")  # Don't change this!
 
 
 def auth_twitter():
@@ -30,7 +29,7 @@ def auth_twitter():
         (token, token_secret) = oauth_dance(app_name, cons_key,
                                             cons_secret)
 
-        token_folder = os.path.join(default["APP_STORAGE"], "out")
+        token_folder = os.path.join(os.environ.get("OPENSHIFT_DATA_DIR"), "out")
         # Maak een map aan genaamd 'out'
         if not os.path.isdir(token_folder):
             os.mkdir(token_folder)
