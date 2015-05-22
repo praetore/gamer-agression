@@ -116,9 +116,13 @@ def store_topic_data(topics, game_related_data=False):
 
 
 def main():
-    print("Retrieving list of topics")
+    print("Retrieving list of popular games")
     games_list = get_trending_games()
+    print(games_list)
+
+    print("Retrieving list of trending topics")
     trends = get_trends_data()
+    print(trends)
 
     print("Training classifier")
     classifier = get_classifier()
