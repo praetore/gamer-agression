@@ -1,8 +1,10 @@
+import os
 import random
 import pickle
 
 import nltk.tokenize as tokenize
 import nltk
+from app import app
 
 
 def bag_of_words(words):
@@ -37,14 +39,15 @@ def get_word_features():
 
 
 def get_classifier():
+    binfile = os.path.join(app.config["APP_STORAGE"], 'classifier.pickle')
     try:
-        with open('classifier.pickle', 'rb') as saved_cl:
+        with open(binfile, 'rb') as saved_cl:
             classifier = pickle.load(saved_cl)
     except (pickle.PickleError, IOError):
         word_features = get_word_features()
         train_set = [(document_features(d, word_features), c) for (d, c) in get_docs()]
         classifier = nltk.NaiveBayesClassifier.train(train_set)
-        with open('classifier.pickle', 'wb') as saved_cl:
+        with open(binfile, 'wb') as saved_cl:
             pickle.dump(classifier, saved_cl)
 
     return classifier

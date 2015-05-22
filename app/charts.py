@@ -1,7 +1,5 @@
 from nvd3 import multiBarChart, pieChart, discreteBarChart
-
-from post_database import get_all_posts_by_topic
-
+from app.database import retrieve_by_topic
 
 __author__ = 'Darryl'
 
@@ -50,7 +48,7 @@ def generate_friends_chart(group):
         index = group.index(topics)
         total_population = []
         for topic in topics:
-            population = get_all_users_by_topic(topic)
+            population = retrieve_by_topic(topic, "users")
             for p in population:
                 total_population.append(p)
 
@@ -88,7 +86,7 @@ def generate_distribution_chart(topics, name, key, mult=10.0, bars=10, include_n
 
     total_population = []
     for topic in topics:
-        population = get_all_users_by_topic(topic)
+        population = retrieve_by_topic(topic, "users")
         for p in population:
             total_population.append(p)
 
@@ -110,7 +108,7 @@ def generate_sentiment_chart(topics, name):
 
     total_population = []
     for topic in topics:
-        population = get_all_posts_by_topic(topic)
+        population = retrieve_by_topic(topic, "posts")
         for p in population:
             total_population.append(p)
 

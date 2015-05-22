@@ -1,12 +1,14 @@
+#!/usr/bin/env python3
 import hashlib
 from urllib.request import urlopen
 
 import arrow
 from bs4 import BeautifulSoup
 from unidecode import unidecode
-from twitter import search_twitter, get_trending_twitter
+from app.database import add_to_db, retrieve_by_topic
 
 from cron.sentiment import get_sentiment, get_classifier
+from cron.twitterdata import get_trending_twitter, search_twitter
 
 
 __author__ = 'Darryl'
@@ -34,17 +36,17 @@ def get_trending_games():
     return games_list
 
 
-def retrieve_data_from_twitter(classifier, subjects, game_related_data=False):
-    store_topic_data(subjects, game_related_data)
-    for subject in subjects:
-        print("Retrieving data on {}".format(subject))
-        status_data = search_twitter(subject)
-        store_user_data(status_data, subject, game_related_data)
-        store_post_data(classifier, status_data, subject, game_related_data)
-        assert len(get_all_users_by_topic(subject)) != 0
+def retrieve_data_from_twitter(classifier, topics, game_related_data=False):
+    store_topic_data(topics, game_related_data)
+    for topic in topics:
+        print("Retrieving data on {}".format(topic))
+        status_data = search_twitter(topic)
+        store_user_data(status_data, topic, game_related_data)
+        store_post_data(classifier, status_data, topic, game_related_data)
+        assert len(retrieve_by_topic(topic, "users")) != 0
 
 
-def store_user_data(status_data, subject, game_related_data=False):
+def store_user_data(status_data, topic, game_related_data=False):
     user_list = []
     for i in status_data:
         if unidecode(i['lang']) == 'en':
@@ -54,16 +56,16 @@ def store_user_data(status_data, subject, game_related_data=False):
             user_item = {"_id": int(user['id']),
                          "user_name": user_name,
                          "gamer": game_related_data,
-                         "subject": subject,
+                         "topic": topic,
                          "followers_count": int(user['followers_count']),
                          "friends_count": int(user['friends_count']),
                          "retweet_on_post_count": int(i['retweet_count'])}
             if user_item not in user_list:
-                add_user(user_item)
+                add_to_db(user_item, "users")
                 user_list.append(user_item)
 
 
-def store_post_data(classifier, status_data, subject, game_related_data=False):
+def store_post_data(classifier, status_data, topic, game_related_data=False):
     post_list = []
     for i in status_data:
         if unidecode(i['lang']):
@@ -73,22 +75,22 @@ def store_post_data(classifier, status_data, subject, game_related_data=False):
 
                 post_item = {"_id": int(i['id']),
                              "gamer": game_related_data,
-                             "subject": subject,
+                             "topic": topic,
                              "post_text": post_text,
                              "post_sentiment": post_sentiment}
 
-                add_post(post_item)
+                add_to_db(post_item, "posts")
                 post_list.append(post_text)
 
 
-def store_topic_data(subjects, game_related_data=False):
+def store_topic_data(topics, game_related_data=False):
     h = hashlib.sha1()
-    for subject in subjects:
-        if not get_topic_by_name(subject):
+    for topic in topics:
+        if not retrieve_by_topic(topic, "topics"):
             utc = arrow.utcnow()
-            add_topic({
-                "_id": h.update(subject).hexdigest(),
-                "subject": subject,
+            add_to_db({
+                "_id": h.update(topic).hexdigest(),
+                "topic": topic,
                 "date_added": utc.to('Europe/Amsterdam').timestamp,
                 "game_data": game_related_data})
 

@@ -1,4 +1,7 @@
+from flask import render_template
 from app import app
+from app.charts import generate_friends_chart, generate_sentiment_chart, generate_distribution_chart
+from app.database import get_latest_topics
 
 
 @app.route('/')

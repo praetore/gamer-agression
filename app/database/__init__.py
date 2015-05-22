@@ -1,14 +1,15 @@
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 from unidecode import unidecode
-from app import config
+from app import app
 
 __author__ = 'darryl'
 
 
-server = config.server
-port = config.port
-database = config.database
+server = app.config["DB_SERVER"]
+port = app.config["DB_PORT"]
+database = app.config["DB_NAME"]
+
 
 def connect():
     uri = 'mongodb://' + server + ":" + str(port)
@@ -34,11 +35,11 @@ def retrieve_by_id(req_id, dbname=None):
     return res
 
 
-def retrieve_by_subject(subject, dbname=None):
+def retrieve_by_topic(topic, dbname=None):
     db = connect()
     collection = db[dbname]
     res = []
-    for i in collection.find({"subject": subject}):
+    for i in collection.find({"topic": topic}):
         res.append(i)
     return res
 
@@ -55,5 +56,5 @@ def get_latest_topics(game_related_data=False):
     collection = db.topics
     topics = []
     for post in collection.find({"game_data": game_related_data, }).sort("date_added", 1):
-        topics.append(unidecode(post['subject']))
+        topics.append(unidecode(post['topic']))
     return topics[:10]

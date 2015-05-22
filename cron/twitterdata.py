@@ -4,17 +4,18 @@ import os
 # http://mike.verdone.ca/twitter/
 
 # Importeer libraries van Twitter-module
-from cron.twitter.oauth import write_token_file, read_token_file
-from cron.twitter.oauth_dance import oauth_dance
+import twitter
+from twitter.oauth import write_token_file, read_token_file
+from twitter.oauth_dance import oauth_dance
 
 # Maak OAuth-gegevens aan
 # Check https://dev.twitter.com/apps, and in an application,
 # go to OAuth tool
-from app import config
+from app import default
 
-app_name = config.app_name
-cons_key = config.cons_key
-cons_secret = config.cons_secret
+app_name = default.app_name
+cons_key = default.cons_key
+cons_secret = default.cons_secret
 
 TOKEN_FILE = "out/twitter.oauth"  # Don't change this!
 
