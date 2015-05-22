@@ -1,0 +1,2 @@
+#!/bin/sh
+export NLTK_DATA=$OPENSHIFT_DATA_DIR;
