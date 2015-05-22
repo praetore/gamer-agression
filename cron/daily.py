@@ -15,21 +15,18 @@ from twitterdata import get_trending_twitter, search_twitter
 
 __author__ = 'Darryl'
 
-DB_SERVER = os.environ.get("OPENSHIFT_MONGODB_DB_HOST")
-DB_PORT = os.environ.get("OPENSHIFT_MONGODB_DB_PORT")
-DB_NAME = os.environ.get("OPENSHIFT_APP_NAME")
-
 
 def connect():
-    uri = 'mongodb://' + DB_SERVER + ":" + str(DB_PORT)
-    client = MongoClient(uri)
-    db = client[DB_NAME]
+    db_name = os.environ.get("OPENSHIFT_APP_NAME")
+    db_url = os.environ.get("OPENSHIFT_MONGODB_DB_URL")
+    client = MongoClient(db_url)
+    db = client[db_name]
     return db
 
 
-def add_to_db(obj, dbname):
+def add_to_db(obj, collname):
     db = connect()
-    collection = db[dbname]
+    collection = db[collname]
     try:
         collection.insert(obj)
     except DuplicateKeyError:

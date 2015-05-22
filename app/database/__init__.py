@@ -5,38 +5,34 @@ from app import app
 __author__ = 'darryl'
 
 
-server = app.config["DB_SERVER"]
-port = app.config["DB_PORT"]
-database = app.config["DB_NAME"]
-
-
 def connect():
-    uri = 'mongodb://' + server + ":" + str(port)
-    client = MongoClient(uri)
-    db = client[database]
+    db_name = app.config.get("DB_NAME")
+    db_url = app.config.get("DB_URL")
+    client = MongoClient(db_url)
+    db = client[db_name]
     return db
 
 
-def retrieve_by_id(req_id, dbname=None):
+def retrieve_by_id(req_id, collname=None):
     db = connect()
-    collection = db[dbname]
+    collection = db[collname]
     id_query = {"_id": req_id}
     res = collection.find_one(id_query)
     return res
 
 
-def retrieve_by_topic(topic, dbname=None):
+def retrieve_by_topic(topic, collname=None):
     db = connect()
-    collection = db[dbname]
+    collection = db[collname]
     res = []
     for i in collection.find({"topic": topic}):
         res.append(i)
     return res
 
 
-def retrieve_all(dbname=None):
+def retrieve_all(collname=None):
     db = connect()
-    collection = db[dbname]
+    collection = db[collname]
     res = [i for i in collection.find()]
     return res
 
