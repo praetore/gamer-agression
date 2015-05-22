@@ -13,11 +13,11 @@ from twitter.oauth_dance import oauth_dance
 # go to OAuth tool
 from app import default
 
-app_name = default.app_name
-cons_key = default.cons_key
-cons_secret = default.cons_secret
+app_name = default["TWITTER_APPNAME"]
+cons_key = default["TWITTER_KEY"]
+cons_secret = default["TWITTER_SECRET"]
 
-TOKEN_FILE = "out/twitter.oauth"  # Don't change this!
+TOKEN_FILE = os.path.join(default["APP_STORAGE"], "out", "twitter.oauth")  # Don't change this!
 
 
 def auth_twitter():
@@ -30,9 +30,10 @@ def auth_twitter():
         (token, token_secret) = oauth_dance(app_name, cons_key,
                                             cons_secret)
 
+        token_folder = os.path.join(default["APP_STORAGE"], "out")
         # Maak een map aan genaamd 'out'
-        if not os.path.isdir('out'):
-            os.mkdir('out')
+        if not os.path.isdir(token_folder):
+            os.mkdir(token_folder)
 
         # Schrijf OAuth-gegevens weg naar bestand op harde-schijf in map 'out'
         write_token_file(TOKEN_FILE, token, token_secret)
