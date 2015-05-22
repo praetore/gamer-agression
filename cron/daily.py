@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 import hashlib
-from urllib.request import urlopen
-
 import arrow
 from bs4 import BeautifulSoup
+from datetime import date
+import requests
 from unidecode import unidecode
 from app.database import add_to_db, retrieve_by_topic
 
@@ -24,8 +24,8 @@ def get_trends_data():
 
 
 def get_trending_games():
-    url = "http://www.imdb.com/search/title?sort=moviemeter&title_type=game&year=2014,2014"
-    html = urlopen(url).read()
+    url = "http://www.imdb.com/search/title?sort=moviemeter&title_type=game&year={0},{0}".format(date.today().year)
+    html = requests.get(url).text
     soup = BeautifulSoup(html)
     games_list = []
     exclude = ["X", "IMDb Pro", ""]
