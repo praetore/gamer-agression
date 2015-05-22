@@ -105,11 +105,10 @@ def store_post_data(classifier, status_data, topic, game_related_data=False):
 
 
 def store_topic_data(topics, game_related_data=False):
-    h = hashlib.sha1()
     for topic in topics:
         utc = arrow.utcnow()
         add_to_db({
-            "_id": h.update(topic).hexdigest(),
+            "_id": hashlib.sha1(topic).hexdigest(),
             "topic": topic,
             "date_added": utc.to('Europe/Amsterdam').timestamp,
             "game_data": game_related_data}, "topics")
