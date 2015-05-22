@@ -1,5 +1,4 @@
 from pymongo import MongoClient
-from pymongo.errors import DuplicateKeyError
 from unidecode import unidecode
 from app import app
 
@@ -16,15 +15,6 @@ def connect():
     client = MongoClient(uri)
     db = client[database]
     return db
-
-
-def add_to_db(obj, dbname=None):
-    db = connect()
-    collection = db[dbname]
-    try:
-        collection.insert(obj)
-    except DuplicateKeyError:
-        pass
 
 
 def retrieve_by_id(req_id, dbname=None):

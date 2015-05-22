@@ -1,17 +1,39 @@
 #!/usr/bin/env python
 import hashlib
+import os
 import arrow
 from bs4 import BeautifulSoup
 from datetime import date
+from pymongo import MongoClient
+from pymongo.errors import DuplicateKeyError
 import requests
 from unidecode import unidecode
-from app.database import add_to_db, retrieve_by_topic
 
-from cron.sentiment import get_sentiment, get_classifier
-from cron.twitterdata import get_trending_twitter, search_twitter
+from sentiment import get_sentiment, get_classifier
+from twitterdata import get_trending_twitter, search_twitter
 
 
 __author__ = 'Darryl'
+
+DB_SERVER = os.environ.get("OPENSHIFT_MONGODB_DB_HOST")
+DB_PORT = os.environ.get("OPENSHIFT_MONGODB_DB_PORT")
+DB_NAME = os.environ.get("OPENSHIFT_APP_NAME")
+
+
+def connect():
+    uri = 'mongodb://' + DB_SERVER + ":" + str(DB_PORT)
+    client = MongoClient(uri)
+    db = client[DB_NAME]
+    return db
+
+
+def add_to_db(obj, dbname):
+    db = connect()
+    collection = db[dbname]
+    try:
+        collection.insert(obj)
+    except DuplicateKeyError:
+        pass
 
 
 def get_trends_data():
@@ -43,7 +65,6 @@ def retrieve_data_from_twitter(classifier, topics, game_related_data=False):
         status_data = search_twitter(topic)
         store_user_data(status_data, topic, game_related_data)
         store_post_data(classifier, status_data, topic, game_related_data)
-        assert len(retrieve_by_topic(topic, "users")) != 0
 
 
 def store_user_data(status_data, topic, game_related_data=False):
@@ -86,13 +107,12 @@ def store_post_data(classifier, status_data, topic, game_related_data=False):
 def store_topic_data(topics, game_related_data=False):
     h = hashlib.sha1()
     for topic in topics:
-        if not retrieve_by_topic(topic, "topics"):
-            utc = arrow.utcnow()
-            add_to_db({
-                "_id": h.update(topic).hexdigest(),
-                "topic": topic,
-                "date_added": utc.to('Europe/Amsterdam').timestamp,
-                "game_data": game_related_data})
+        utc = arrow.utcnow()
+        add_to_db({
+            "_id": h.update(topic).hexdigest(),
+            "topic": topic,
+            "date_added": utc.to('Europe/Amsterdam').timestamp,
+            "game_data": game_related_data}, "topics")
 
 
 def main():
